@@ -1,12 +1,17 @@
 {
-   "description": "Pin any image to pinterest",
+   "description": "Pin any item to your Stotles pinboard",
    "icons": {
-      "16": "pinterest-16.png",
-      "128": "pinterest-128.png"
+      "16": "stotles.png",
+      "128": "stotles.png"
    },
-   "background_page": "background.html",
-   "name": "Pinterest quick add",
+   "browser_action": {
+    "default_icon": "stotles.png",
+    "default_popup": "background.html",
+    "default_title": "Pin to my Stotles pinboard"
+   },
+   "name": "Stotles Add to Pinboard",
    "permissions": [ "contextMenus", "tabs", "http://*/*", "https://*/*" ],
-   "update_url": "http://metaatem.net/exts/update.php",
-   "version": "1.0.4"
+   "version": "0.1",
+   "content_security_policy": "script-src 'self' 'sha256-MRBoPqNYN6Eh/WgQ3uU+KAepEa5MPZcbp0c2lZmb6ZA='; object-src 'self'; script-src-elem 'self' 'unsafe-inline'",
+   "manifest_version": 2
 }

@@ -1,1 +1,159 @@
-<script src="content_script.js?fooo"></script>
+<html>
+  <head>
+    <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+    <style>
+      body {
+        padding: 12px 0;
+        margin: 0;
+      }
+
+      body * {
+        font-family: 'Lato', sans-serif;
+      }
+
+      main {
+        width: 275px;
+      }
+
+      fieldset {
+        display: flex;
+        flex-direction: column;
+        width: 80%;
+        border: none;
+        margin: 0px;
+        padding: 8px 0;
+      }
+
+      form {
+        margin: 0px;
+        padding: 0px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+      }
+
+      h1 {
+        text-align: left;
+        margin-bottom: 8px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+
+      input[type="date"] {
+        font-family: 'Lato', sans-serif;
+      }
+
+      input[type="submit"] {
+        background-color: #4f86fa;
+        border: 1px solid #4f86fa;
+        border-radius: 4px;
+        color: #fff;
+        margin: 8px 0;
+        padding: 6px 8px;
+      }
+
+      #category-select {
+        width: 100%;
+      }
+
+      #title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 10%;
+      }
+
+      #logo {
+        height: 40px;
+        width: auto;
+      }
+
+      #success {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        flex-direction: column;
+        width: 100%
+      }
+
+      #remind-check {
+        display: flex;
+        align-items: center;
+      }
+
+      #date {
+        width: 100%
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div id="title">
+        <h1>Pin to my Stotles board</h1>
+        <img src="stotles.png" id="logo">
+      </div>
+      <form action="https://paywalls.test.stotles.com/api/records" method="POST" id="form" style="display: flex">
+        <fieldset>
+          <label for="title">Title</label>
+          <input name="title">
+        </fieldset>
+        <fieldset>
+          <label for="category">Category</label>
+          <select name="category" id="category-select"></select>
+        </fieldset>
+        <fieldset>
+          <span id="remind-check"><label>Set a reminder</label><input type="checkbox"></span>
+        </fieldset>
+        <fieldset id="remind-date" style="display: none">
+          <label for="date">Remind me on</label>
+          <input type="date" name="reminder_date" id="date">
+        </fieldset>
+        <input name="url" hidden id="url-field">
+        <input type="submit" value="Save">
+      </form>
+      <div id="success" style="display: none">
+        <h2>Pinned!</h2>
+        <a href="https://paywalls.test.stotles.com/pinboard" target="_blank">View my board</a>
+      </div>
+    </main>
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        const resp = await fetch("https://paywalls.test.stotles.com/api/companies/5/record_tags?tag_set_id=f03dbae7-18ff-4156-b852-20e5f5dd0542")
+        const categorySelector = document.getElementById("category-select");
+        const json = await resp.json();
+        for (const tag of json.tags) {
+          const tagEl = document.createElement('OPTION')
+          tagEl.value = tag.name;
+          const value = document.createTextNode(tag.name);
+          tagEl.appendChild(value);
+          tagEl.style.backgroundColor = tag.colour;
+          categorySelector.appendChild(tagEl);
+        }
+
+        chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
+            const url = tabs[0].url;
+            document.getElementById("url-field").value = url
+        });
+      })
+      const formElem = document.getElementById('form');
+      form.addEventListener('submit', () => {
+        formElem.style.display = 'none';
+        document.getElementById('success').style.display = 'flex';
+      });
+      const remindCheck = document.querySelector('#remind-check input');
+      const remindWrapper = document.getElementById('remind-date')
+      const remindDate = document.getElementById('date');
+      remindCheck.addEventListener('change', e => {
+        if (e.currentTarget.checked) {
+          remindWrapper.style.display = 'block';
+        } else {
+          remindDate.value = null;
+          remindWrapper.style.display = 'none';
+        }
+      })
+    </script>
+  </body>
+</html>
